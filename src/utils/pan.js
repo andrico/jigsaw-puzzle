@@ -32,8 +32,8 @@ const zoom = ({ focal, zoom, max = 10000, min = 0.05 }) => {
 }
 
 export const restore = (canvas) => {
-  position.x = (canvas.width / 2) * Math.min(2, canvas.devicePixelRatio)
-  position.y = (canvas.height / 2) * Math.min(2, canvas.devicePixelRatio)
+  position.x = (canvas.width / 2) * Math.min(2, window.devicePixelRatio)
+  position.y = (canvas.height / 2) * Math.min(2, window.devicePixelRatio)
 }
 
 function isTouchDevice() {
