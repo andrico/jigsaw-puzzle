@@ -12,6 +12,40 @@ import pan, { getTransformedPosition } from './utils/pan.js'
 import { makeCanvas, loadImage, paint, resize, setCursor } from './canvas.js'
 import { cutPieces } from './utils/create-piece.js'
 
+
+type PuzzleDto = {
+  moves: number
+  status: string
+  done: boolean
+  startTime: number
+  attraction: number
+  size: { x: number; y: number }
+  pieces: any[]
+}
+
+type UiDto = {
+  url: string
+  zoom: number
+  position: { x: number; y: number }
+  size: { x: number; y: number }
+  canvas: HTMLCanvasElement
+  ctx: CanvasRenderingContext2D
+  image: HTMLImageElement
+  dpi: number
+  shapes: any[]
+}
+
+type PuzzleStateDto = {
+  moves: number
+  status: string
+  done: boolean
+  startTime: number
+  attraction: number
+  size: { x: number; y: number }
+  pieces: any[]
+}
+
+
 export const puzzle = async ({
   element,
   image: img = '',
@@ -25,6 +59,19 @@ export const puzzle = async ({
   onInit = () => {},
   onComplete = () => {},
   onChange = () => {},
+}: {
+  element: string | HTMLElement
+  image: string
+  pieces: { x: number; y: number }
+  attraction: number
+  aligned: boolean
+  individualize: boolean
+  zoom: number
+  zoomable: boolean
+  beforeInit: (canvas: HTMLCanvasElement) => void
+  onInit: (state: any) => void
+  onComplete: (state: any) => void
+  onChange: (state: any) => void
 }) => {
   const container =
     typeof element === 'string' ? document.querySelector(element) : element
@@ -40,7 +87,7 @@ export const puzzle = async ({
 
   const { image, width, height } = await loadImage(img)
 
-  const initPuzzle = {
+  const initPuzzle: PuzzleDto = {
     moves: 0,
     status: 'idle',
     done: false,
@@ -50,7 +97,7 @@ export const puzzle = async ({
     pieces: makePieces(pieces, individualize),
   }
 
-  const initUI = {
+  const initUI: UiDto = {
     url: img,
     zoom: 1,
     position: { x: 0, y: 0 },
@@ -62,18 +109,21 @@ export const puzzle = async ({
     shapes: cutPieces(width / pieces.x, height / pieces.y, initPuzzle.pieces),
   }
 
-  let state = {}
-
-  state.puzzle = pipe(shuffle(aligned))(initPuzzle)
-  state.ui = paint(state.puzzle)(initUI)
+  let state: {
+    puzzle: PuzzleDto
+    ui: UiDto
+  } = {
+    puzzle: pipe(shuffle(aligned))(initPuzzle),
+    ui: paint(initPuzzle)(initUI),
+  }
 
   const { zoom, restore } = pan(canvas, {
     dpi: Math.min(2, window.devicePixelRatio),
     initScale:
       initZoom ||
       Math.min(
-        (window.innerWidth / state.ui.size.x) * 0.9,
-        (window.innerHeight / state.ui.size.y) * 0.9
+        (canvas.innerWidth / state.ui.size.x) * 0.9,
+        (canvas.innerHeight / state.ui.size.y) * 0.9
       ),
   })
 
@@ -81,7 +131,7 @@ export const puzzle = async ({
     state.ui = pipe(paint(state.puzzle), setCursor(state.puzzle))(state.ui)
   }
 
-  canvas.addEventListener('pan', e => {
+  canvas.addEventListener('pan', (e: any) => {
     e.preventDefault()
     const {
       detail: { scale, position },
@@ -96,12 +146,15 @@ export const puzzle = async ({
 
   setTimeout(() => onInit(state))
 
-  const getCursor = ({ x, y }) => {
+  const getCursor = ({ x, y }): {
+    x: number
+    y: number
+  } => {
     const [xpos, ypos] = getTransformedPosition({ x, y }, state.ui.dpi)
     return { x: xpos / state.ui.size.x, y: ypos / state.ui.size.y }
   }
 
-  const handlePointerdown = ({ offsetX: x, offsetY: y }) => {
+  const handlePointerdown = ({ offsetX: x, offsetY: y }): void => {
     const cursor = getCursor({ x, y })
 
     state.puzzle = pipe(activate(cursor), setStatus(cursor))(state.puzzle)
@@ -109,7 +162,7 @@ export const puzzle = async ({
     updateUI()
   }
 
-  const handlePointermove = ({ offsetX: x, offsetY: y }) => {
+  const handlePointermove = ({ offsetX: x, offsetY: y }): void => {
     const cursor = getCursor({ x, y })
 
     state.puzzle = pipe(move(cursor), setStatus(cursor))(state.puzzle)
@@ -117,7 +170,7 @@ export const puzzle = async ({
     updateUI()
   }
 
-  const handlePointerup = ({ offsetX: x, offsetY: y }) => {
+  const handlePointerup = ({ offsetX: x, offsetY: y }): void => {
     const cursor = getCursor({ x, y })
 
     state.puzzle = pipe(
@@ -151,17 +204,23 @@ export const puzzle = async ({
       state.puzzle = pipe(shuffle(aligned))(initPuzzle)
       updateUI()
     },
-    getState: () => clone(state.puzzle),
-    setState: newState => {
+    getState: (): PuzzleStateDto => clone(state.puzzle),
+    setState: (newState: PuzzleStateDto) => {
       state.puzzle = newState
       updateUI()
     },
     destroy: () => {
-      if (element.tagName !== 'CANVAS') {
+      if (
+        element instanceof HTMLElement &&
+        element.tagName !== 'CANVAS'
+      ) {
         state.ui.canvas.remove()
       }
 
-      state = null
+      state = {
+        puzzle: initPuzzle,
+        ui: initUI,
+      }
     },
     setZoom: zoomable ? zoom : () => {},
     getZoom: () => state.ui.zoom,

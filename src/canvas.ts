@@ -1,30 +1,20 @@
 import { tap } from './utils/utils.js'
-import { resizeImage } from './utils/resize-image.js'
 
-const scales = [...Array(20)].map((_, i) => Math.floor((1 - i / 20) * 20) / 20)
 
-console.log(scales)
-
-export const loadImage = src =>
+export const loadImage = (src: string) =>
   new Promise(resolve => {
     const image = new Image()
 
     image.onload = () => {
-      // const images = scales.map(scale => ({
-      //   image: resizeImage(image, scale),
-      //   width: image.width,
-      //   height: image.height,
-      // }))
-
-      // console.log(images)
-
       resolve({ image, width: image.width, height: image.height })
     }
 
     image.src = src
   })
 
-export const resize = canvas => {
+export const resize = (canvas: HTMLCanvasElement) => {
+  if (!canvas.parentElement) return
+
   const { height, width } = getComputedStyle(canvas.parentElement)
 
   const dpr = Math.min(2, window.devicePixelRatio)
@@ -33,11 +23,14 @@ export const resize = canvas => {
   canvas.height = parseInt(height, 0) * dpr
 }
 
-export const makeCanvas = element => {
+export const makeCanvas = (element: HTMLCanvasElement | HTMLElement) => {
+  if (!element) return
+
   const canvas =
-    element && element.tagName === 'CANVAS'
+    element instanceof HTMLCanvasElement
       ? element
       : document.createElement('canvas')
+
   const ctx = canvas.getContext('2d')
 
   if (element && element.tagName !== 'CANVAS') {
@@ -49,6 +42,8 @@ export const makeCanvas = element => {
     resize(canvas)
   }
 
+  if (!ctx) return
+
   ctx.strokeStyle = 'rgba(220, 220, 220, 1)'
   ctx.lineCap = 'round'
   ctx.lineJoin = 'round'
@@ -59,7 +54,7 @@ export const makeCanvas = element => {
   }
 }
 
-export const clearCanvas = tap(ui => {
+export const clearCanvas = tap((ui: any) => {
   const { canvas, ctx } = ui
   ctx.save()
   ctx.setTransform(1, 0, 0, 1, 0, 0)
@@ -68,7 +63,7 @@ export const clearCanvas = tap(ui => {
 })
 
 export const paint = puzzle =>
-  tap(ui => {
+  tap((ui: any) => {
     clearCanvas(ui)
     puzzle.pieces.map(paintPiece(puzzle, ui))
   })
