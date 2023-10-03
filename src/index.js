@@ -20,6 +20,7 @@ export const puzzle = async ({
   aligned = true,
   individualize = false,
   zoom: initZoom,
+  zoomable = true,
   beforeInit = () => {},
   onInit = () => {},
   onComplete = () => {},
@@ -162,7 +163,7 @@ export const puzzle = async ({
 
       state = null
     },
-    setZoom: zoom,
+    setZoom: zoomable ? zoom : () => {},
     getZoom: () => state.ui.zoom,
     centralize: restore,
   }
