@@ -4,8 +4,8 @@ const clamp = (val, min, max) => {
 
 let scale = 1
 const position = {
-  x: canvas.width / 2,
-  y: canvas.height / 2,
+  x: window.innerWidth / 2,
+  y: window.innerHeight / 2,
 }
 
 const move = ({ x, y, bounding = { x: Infinity, y: Infinity } }) => {
@@ -31,7 +31,7 @@ const zoom = ({ focal, zoom, max = 10000, min = 0.05 }) => {
   return { position, scale }
 }
 
-export const restore = () => {
+export const restore = (canvas) => {
   position.x = (canvas.width / 2) * Math.min(2, canvas.devicePixelRatio)
   position.y = (canvas.height / 2) * Math.min(2, canvas.devicePixelRatio)
 }
@@ -172,7 +172,7 @@ export default (
       dispatch({ scale, position })
     },
     restore: () => {
-      restore()
+      restore(canvas)
       dispatch({ scale, position })
     },
   }

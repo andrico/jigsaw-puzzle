@@ -1,6 +1,6 @@
 {
   "name": "jigsaw-puzzle",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "A canvas puzzle generator",
   "main": "dist/cjs/jigsaw-puzzle.js",
   "module": "dist/esm/jigsaw-puzzle.js",
