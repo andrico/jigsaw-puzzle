@@ -73,8 +73,8 @@ export const puzzle = async ({
     initScale:
       initZoom ||
       Math.min(
-        (canvas.width / state.ui.size.x) * 0.9,
-        (canvas.height / state.ui.size.y) * 0.9
+        (window.innerWidth / state.ui.size.x) * 0.9,
+        (window.innerHeight / state.ui.size.y) * 0.9
       ),
   })
 
