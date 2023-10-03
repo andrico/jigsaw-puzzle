@@ -4,8 +4,8 @@ const clamp = (val, min, max) => {
 
 let scale = 1
 const position = {
-  x: window.innerWidth / 2,
-  y: window.innerHeight / 2,
+  x: canvas.width / 2,
+  y: canvas.height / 2,
 }
 
 const move = ({ x, y, bounding = { x: Infinity, y: Infinity } }) => {
@@ -50,6 +50,7 @@ export default (
     dpi = Math.min(2, window.devicePixelRatio),
     bounding = null,
     initScale = 1,
+    zoomable = true,
   } = {}
 ) => {
   canvas.style.touchAction = 'none'
@@ -141,6 +142,9 @@ export default (
   } else {
     canvas.addEventListener('wheel', e => {
       e.preventDefault()
+      if (!zoomable) {
+        return
+      }
 
       if (e.ctrlKey) {
         dispatch(
@@ -159,8 +163,8 @@ export default (
     zoom: newScale => {
       zoom({
         focal: {
-          x: (window.innerWidth / 2) * dpi,
-          y: (window.innerHeight / 2) * dpi,
+          x: (canvas.width / 2) * dpi,
+          y: (canvas.height / 2) * dpi,
         },
         zoom: newScale,
       })

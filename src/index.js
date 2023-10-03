@@ -69,11 +69,12 @@ export const puzzle = async ({
 
   const { zoom, restore } = pan(canvas, {
     dpi: Math.min(2, window.devicePixelRatio),
+    zoomable,
     initScale:
       initZoom ||
       Math.min(
-        (window.innerWidth / state.ui.size.x) * 0.9,
-        (window.innerHeight / state.ui.size.y) * 0.9
+        (canvas.width / state.ui.size.x) * 0.9,
+        (canvas.height / state.ui.size.y) * 0.9
       ),
   })
 
