@@ -176,7 +176,7 @@ export default (
       dispatch({ scale, position })
     },
     restore: () => {
-      restore(canvas)
+      restore()
       dispatch({ scale, position })
     },
   }

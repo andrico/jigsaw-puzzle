@@ -50,7 +50,7 @@ export const clearCanvas = tap(ui => {
   const { canvas, ctx } = ui
   ctx.save()
   ctx.setTransform(1, 0, 0, 1, 0, 0)
-  ctx.clearRect(0, 0, window.innerWidth, window.innerHeight)
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
   ctx.restore()
 })
 
