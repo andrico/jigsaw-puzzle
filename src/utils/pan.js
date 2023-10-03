@@ -115,6 +115,11 @@ export default (
               Math.pow(fingersArray[1].y - fingersArray[0].y, 2)
           )
 
+    if (!zoomable) {
+      dispatch({ position })
+      return
+    }
+
     const { scale } = zoom({
       focal: { x: e.offsetX * dpi, y: e.offsetY * dpi },
       zoom:
@@ -142,11 +147,10 @@ export default (
   } else {
     canvas.addEventListener('wheel', e => {
       e.preventDefault()
-      if (!zoomable) {
-        return
-      }
-
       if (e.ctrlKey) {
+        if (!zoomable) {
+          return
+        }
         dispatch(
           zoom({
             focal: { x: e.offsetX * dpi, y: e.offsetY * dpi },
