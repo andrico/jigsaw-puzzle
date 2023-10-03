@@ -163,8 +163,8 @@ export default (
     zoom: newScale => {
       zoom({
         focal: {
-          x: (canvas.width / 2) * dpi,
-          y: (canvas.height / 2) * dpi,
+          x: (window.innerWidth / 2) * dpi,
+          y: (window.innerHeight / 2) * dpi,
         },
         zoom: newScale,
       })
