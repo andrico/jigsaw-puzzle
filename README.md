@@ -1,7 +1,5 @@
-[demo](https://gto3y.csb.app/)
-
 ```bash
-yarn add jigsaw-puzzle
+yarn add https://github.com/andrico/jigsaw-puzzle
 ```
 
 ```js
